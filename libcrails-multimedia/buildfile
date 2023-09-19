@@ -1,0 +1,44 @@
+#import intf_libs += libboost-process%lib{boost_process}
+import intf_libs += libcrails-attachment%lib{crails-attachment}
+
+lib{crails-multimedia}: {hxx ixx txx cxx}{**} $impl_libs $intf_libs
+
+hxx{version}: in{version} $src_root/manifest
+
+hxx{export}@./: cxx.importable = false
+
+# Build options.
+#
+cxx.poptions =+ "-I$out_root/libcrails-multimedia" "-I$src_root/libcrails-multimedia"
+
+{hbmia obja}{*}: cxx.poptions += -DLIBCRAILS_MULTIMEDIA_STATIC_BUILD
+{hbmis objs}{*}: cxx.poptions += -DLIBCRAILS_MULTIMEDIA_SHARED_BUILD
+
+# Export options.
+#
+lib{crails-multimedia}:
+{
+  cxx.export.poptions = "-I$out_root/libcrails-multimedia" "-I$src_root/libcrails-multimedia"
+  cxx.export.libs = $intf_libs
+}
+
+liba{crails-multimedia}: cxx.export.poptions += -DLIBCRAILS_MULTIMEDIA_STATIC
+libs{crails-multimedia}: cxx.export.poptions += -DLIBCRAILS_MULTIMEDIA_SHARED
+
+# For pre-releases use the complete version to make sure they cannot be used
+# in place of another pre-release or the final version. See the version module
+# for details on the version.* variable values.
+#
+if $version.pre_release
+  lib{crails-multimedia}: bin.lib.version = "-$version.project_id"
+else
+  lib{crails-multimedia}: bin.lib.version = "-$version.major.$version.minor"
+
+# Install into the libcrails-multimedia/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+#
+{hxx ixx txx}{*}:
+{
+  install         = include/
+  install.subdirs = true
+}
