@@ -1,6 +1,8 @@
 #include "audiofile.hpp"
 #include "multimedia_convert_failure.hpp"
 #include <boost/process.hpp>
+#include <crails/logger.hpp>
+#include <filesystem>
 
 using namespace std;
 using namespace Crails;
@@ -34,11 +36,19 @@ void AudioFile::convert(const string& extension, const string& mimetype, const s
   this->mimetype = mimetype;
   this->operator=(this->name + '.' + this->mimetype + '.' + this->extension);
   output = get_filepath();
-  command = "ffmpeg -y -i \"" + source + "\" -acodec " + codec + " \"" + output + '"';
 
-  boost::process::child process(command);
+  if (filesystem::exists(source))
+  {
+    command = "ffmpeg -y -i \"" + source + "\" -acodec " + codec + " \"" + output + '"';
 
-  process.wait();
-  if (process.exit_code() != 0)
-    throw MultimediaConvertFailure("could not convert audio file to " + mimetype);
+    logger << Logger::Info << "Converting audiofile:\n" << command << Logger::endl;
+
+    boost::process::child process(command);
+
+    process.wait();
+    if (process.exit_code() != 0)
+      throw MultimediaConvertFailure("could not convert audio file to " + mimetype);
+  }
+  else
+    throw MultimediaConvertFailure("source file does not exist: " + source);
 }

@@ -10,4 +10,4 @@ email: michael@unetresgrossebite.com
 depends: * build2 >= 0.15.0
 depends: * bpkg >= 0.15.0
 depends: { libboost-process } >= 1.74
-depends: { libcrails-attachment } ^2.0.0
+depends: { libcrails-attachment libcrails-logger } ^2.0.0

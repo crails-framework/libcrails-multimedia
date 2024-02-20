@@ -1,6 +1,8 @@
 #include "videofile.hpp"
 #include "multimedia_convert_failure.hpp"
 #include <boost/process.hpp>
+#include <crails/logger.hpp>
+#include <filesystem>
 
 using namespace std;
 using namespace Crails;
@@ -34,11 +36,19 @@ void VideoFile::convert(const string& extension, const string& mimetype, const s
   this->mimetype = mimetype;
   this->operator=(this->name + '.' + this->mimetype + '.' + this->extension);
   output = get_filepath();
-  command = "ffmpeg -y -i \"" + source + "\" -c:v " + vcodec + " -a:v " + acodec + " \"" + output + '"';
 
-  boost::process::child process(command);
+  if (filesystem::exists(source))
+  {
+    command = "ffmpeg -y -i \"" + source + "\" -c:v " + vcodec + " -a:v " + acodec + " \"" + output + '"';
+  
+    logger << Logger::Info << "Converting videofile:\n" << command << Logger::endl;
 
-  process.wait();
-  if (process.exit_code() != 0)
-    throw MultimediaConvertFailure("could not convert video file to " + mimetype);
+    boost::process::child process(command);
+
+    process.wait();
+    if (process.exit_code() != 0)
+      throw MultimediaConvertFailure("could not convert video file to " + mimetype);
+  }
+  else
+    throw MultimediaConvertFailure("source file does not exist: " + source);
 }
