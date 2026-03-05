@@ -15,6 +15,9 @@ cxx.poptions =+ "-I$out_root/libcrails-multimedia" "-I$src_root/libcrails-multim
 {hbmia obja}{*}: cxx.poptions += -DLIBCRAILS_MULTIMEDIA_STATIC_BUILD
 {hbmis objs}{*}: cxx.poptions += -DLIBCRAILS_MULTIMEDIA_SHARED_BUILD
 
+if ($config.libcrails_multimedia.boost_process_force_v1)
+  cxx.poptions += "-DLIBCRAILS_MULTIMEDIA_BOOST_PROCESS_V1"
+
 # Export options.
 #
 lib{crails-multimedia}:

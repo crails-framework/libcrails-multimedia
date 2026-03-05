@@ -1,3 +1,5 @@
+config [bool] config.libcrails_multimedia.boost_process_force_v1 ?= false
+
 # Uncomment to suppress warnings coming from external libraries.
 #
 #cxx.internal.scope = current
