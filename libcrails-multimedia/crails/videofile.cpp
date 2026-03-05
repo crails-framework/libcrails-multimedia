@@ -1,6 +1,8 @@
 #include "videofile.hpp"
 #include "multimedia_convert_failure.hpp"
+#include <boost/version.hpp>
 #include <boost/process.hpp>
+#include <boost/asio.hpp>
 #include <crails/logger.hpp>
 #include <filesystem>
 
@@ -43,7 +45,12 @@ void VideoFile::convert(const string& extension, const string& mimetype, const s
   
     logger << Logger::Info << "Converting videofile:\n" << command << Logger::endl;
 
+#if BOOST_VERSION < 108800
     boost::process::child process(command);
+#else
+    boost::asio::io_context ios;
+    boost::process::process process(ios, "/usr/bin/ffmpeg", {"-y", "-i",  source, "-c:v", vcodec, "-a:v", acodec, output});
+#endif
 
     process.wait();
     if (process.exit_code() != 0)
