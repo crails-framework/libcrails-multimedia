@@ -1,6 +1,9 @@
-#import intf_libs += libboost-process%lib{boost_process}
 import intf_libs += libcrails-attachment%lib{crails-attachment}
 import intf_libs += libcrails-logger%lib{crails-logger}
+if ($config.libcrails_multimedia.alt_build2_imports)
+  import libs += libboost-process%lib{boost_process}
+else
+  import intf_libs += libboost-process%lib{boost_process}
 
 lib{crails-multimedia}: {hxx ixx txx cxx}{**} $impl_libs $intf_libs
 
